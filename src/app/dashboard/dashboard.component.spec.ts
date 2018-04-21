@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 
 import { DashboardComponent } from './dashboard.component';
+import { HeroService } from '../hero.service';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -8,7 +11,10 @@ describe('DashboardComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DashboardComponent ]
+      imports: [ HttpClientModule ],
+      declarations: [ DashboardComponent ],
+      providers: [ HeroService ],
+      schemas: [ NO_ERRORS_SCHEMA ],
     })
     .compileComponents();
   }));
