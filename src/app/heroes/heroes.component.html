@@ -4,16 +4,22 @@
   <label>Hero name:
     <input #heroName />
   </label>
+  <span *ngIf="isAddingHero$ | async">loading</span>
   <button (click)="add(heroName.value); heroName.value=''">
-    add
+    Add
   </button>
 </div>
 
+<span *ngIf="isLoading$ | async">loading</span>
 <ul class="heroes">
-  <li *ngFor="let hero of heroes">
+  <li *ngFor="let hero of heroes$ | async">
     <a routerLink="/detail/{{hero.id}}">
       <span class="badge">{{hero.id}}</span> {{hero.name}}
     </a>
-    <button class="delete" title="delete hero" (click)="delete(hero)">x</button>
+
+    <span *ngIf="(deletingHero$ | async)?.id === hero.id">loading</span>
+    <button class="delete" title="delete hero" (click)="delete(hero)">
+      x
+    </button>
   </li>
 </ul>

@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 
 import { Hero } from './hero';
 import { HEROES } from './mock-heroes';
@@ -18,8 +18,9 @@ export class HeroService {
 
   constructor(private http: HttpClient) { }
 
-  getHeroes (): Observable<Hero[]> {
+  getHeroes(): Observable<Hero[]> {
     return this.http.get<Hero[]>(this.heroesUrl).pipe(
+      tap(data => { console.log('Api - getHeroes:', data); }),
       catchError(this.handleError('getHeroes', []))
     );
   }
@@ -27,27 +28,31 @@ export class HeroService {
   getHero(id: number): Observable<Hero> {
     const url = `${this.heroesUrl}/${id}`;
     return this.http.get<Hero>(url).pipe(
+      tap(data => { console.log('Api - getHeroes:', data); }),
       catchError(this.handleError<Hero>(`getHero id=${id}`))
     );
   }
 
-  updateHero (hero: Hero): Observable<any> {
+  updateHero(hero: Hero): Observable<any> {
     return this.http.put(this.heroesUrl, hero, httpOptions).pipe(
+      tap(data => { console.log('Api - updateHero:', data); }),
       catchError(this.handleError<any>('updateHero'))
     );
   }
 
-  addHero (hero: Hero): Observable<Hero> {
+  addHero(hero: Hero): Observable<Hero> {
     return this.http.post<Hero>(this.heroesUrl, hero, httpOptions).pipe(
+      tap(data => { console.log('Api - addHero:', data); }),
       catchError(this.handleError<Hero>('addHero'))
     );
   }
 
-  deleteHero (hero: Hero | number): Observable<Hero> {
+  deleteHero(hero: Hero | number): Observable<Hero> {
     const id = typeof hero === 'number' ? hero : hero.id;
     const url = `${this.heroesUrl}/${id}`;
 
     return this.http.delete<Hero>(url, httpOptions).pipe(
+      tap(data => { console.log('Api - deleteHero:', data); }),
       catchError(this.handleError<Hero>('deleteHero'))
     );
   }

@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { Store, select } from '@ngrx/store';
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
+import { Observable } from 'rxjs/Observable';
+import { map } from 'rxjs/operators/map';
+
+import { LoadHeroes, AddHero, DeleteHero } from '../actions/heroes.action';
 
 @Component({
   selector: 'app-heroes',
@@ -8,30 +13,49 @@ import { HeroService } from '../hero.service';
   styleUrls: ['./heroes.component.css']
 })
 export class HeroesComponent implements OnInit {
-  heroes: Hero[];
+  heroes$: Observable<Hero[]>;
+  isLoading$: Observable<boolean>;
 
-  constructor(private heroService: HeroService) { }
+  isAddingHero$: Observable<boolean>;
+  hasAddHeroError$: Observable<string>;
+
+  deletingHero$: Observable<any>;
+  hasDeleteHeroError$: Observable<string>;
+
+
+  constructor(
+    private heroService: HeroService,
+    private store: Store<any>
+  ) { }
 
   ngOnInit() {
     this.getHeroes();
+    this.addHero();
+    this.deleteHero();
   }
 
   getHeroes(): void {
-    this.heroService.getHeroes()
-      .subscribe(heroes => this.heroes = heroes);
+    this.isLoading$ = this.store.select('heroes').pipe(map(state => state.isLoading));
+    this.heroes$ = this.store.select('heroes').pipe(map(state => state.heroes));
+    this.store.dispatch(new LoadHeroes());
+  }
+
+  addHero(): void {
+    this.isAddingHero$ = this.store.select('heroes').pipe(map(state => state.isAddingHero));
+    this.hasAddHeroError$ = this.store.select('heroes').pipe(map(state => state.hasAddHeroError));
+  }
+
+  deleteHero(): void {
+    this.deletingHero$ = this.store.select('heroes').pipe(map(state => state.deletingHero));
   }
 
   add(name: string): void {
     name = name.trim();
     if (!name) { return; }
-    this.heroService.addHero({ name } as Hero)
-      .subscribe(hero => {
-        this.heroes.push(hero);
-      });
+    this.store.dispatch(new AddHero(name));
   }
 
   delete(hero: Hero): void {
-    this.heroes = this.heroes.filter(h => h !== hero);
-    this.heroService.deleteHero(hero).subscribe();
+    this.store.dispatch(new DeleteHero(hero));
   }
 }
